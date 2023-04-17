@@ -1,0 +1,24 @@
+{
+  "cls_token": "[CLS]",
+  "do_lower_case": false,
+  "do_subword_tokenize": true,
+  "do_word_tokenize": true,
+  "jumanpp_kwargs": null,
+  "mask_token": "[MASK]",
+  "mecab_kwargs": null,
+  "model_max_length": 512,
+  "never_split": null,
+  "pad_token": "[PAD]",
+  "sep_token": "[SEP]",
+  "special_tokens_map_file": null,
+  "subword_tokenizer_type": "wordpiece",
+  "sudachi_kwargs": null,
+  "tokenizer_class": "NER_tokenizer_BIO",
+  "unk_token": "[UNK]",
+  "word_tokenizer_type": "mecab",
+  "auto_map": [
+      "NER_medNLP.NER_tokenizer_BIO",
+      null
+  ],
+  "num_entity_type": "40"
+}

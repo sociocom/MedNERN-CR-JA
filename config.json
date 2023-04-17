@@ -183,7 +183,7 @@
   "num_hidden_layers": 12,
   "pad_token_id": 0,
   "position_embedding_type": "absolute",
-  "tokenizer_class": "BertJapaneseTokenizer",
+  "tokenizer_class": "NER_medNLP.NER_tokenizer_BIO",
   "type_vocab_size": 2,
   "vocab_size": 32000
 }
