@@ -5,29 +5,38 @@ from rapidfuzz import fuzz, process
 
 class EntityDictionary:
 
-    def __init__(self, path):
+    def __init__(self, path, candidate_column, normalization_column):
+        if path is None:
+            raise ValueError('Path to dictionary file is not specified.')
+        if candidate_column is None:
+            raise ValueError('Candidate column is not specified.')
+        if normalization_column is None:
+            raise ValueError('Normalization column is not specified.')
+
         self.df = pd.read_csv(path)
+        self.candidate_column = candidate_column
+        self.normalization_column = normalization_column
 
     def get_candidates_list(self):
-        return self.df.iloc[:, 0].to_list()
+        return self.df.iloc[:, self.candidate_column].to_list()
 
     def get_normalization_list(self):
-        return self.df.iloc[:, 2].to_list()
+        return self.df.iloc[:, self.normalization_column].to_list()
 
     def get_normalized_term(self, term):
-        return self.df[self.df.iloc[:, 0] == term].iloc[:, 2].item()
+        return self.df[self.df.iloc[:, self.candidate_column] == term].iloc[:, self.normalization_column].item()
 
 
-class DiseaseDict(EntityDictionary):
-
-    def __init__(self):
-        super().__init__('dictionaries/disease_dict.csv')
-
-
-class DrugDict(EntityDictionary):
+class DefaultDiseaseDict(EntityDictionary):
 
     def __init__(self):
-        super().__init__('dictionaries/drug_dict.csv')
+        super().__init__('dictionaries/disease_dict.csv', 0, 2)
+
+
+class DefaultDrugDict(EntityDictionary):
+
+    def __init__(self):
+        super().__init__('dictionaries/drug_dict.csv', 0, 2)
 
 
 class EntityNormalizer:
@@ -48,4 +57,3 @@ class EntityNormalizer:
             return ('' if pd.isna(ret) else ret), score
         else:
             return '', score
-
