@@ -1,17 +1,3 @@
----
-language:
-  - ja
-license:
-  - cc-by-4.0
-tags:
-  - NER
-  - medical documents
-datasets:
-  - MedTxt-CR-JA-training-v2.xml
-metrics:
-  - NTCIR-16 Real-MedNLP subtask 1
----
-
 
 This is a model for named entity recognition of Japanese medical documents.
 
