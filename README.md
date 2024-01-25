@@ -11,7 +11,7 @@ The original model was trained on the [MedTxt-CR-JA](https://sociocom.naist.jp/m
 
 ## How to use
 
-Install the requirements:
+Install the requirements:  
 
 ``` 
 pip install -r requirements.txt
