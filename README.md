@@ -100,12 +100,15 @@ python3 predict.py -m <model_path> --normalize
 Normalization will add the `norm` attribute to the output XML tags. This attribute can be empty if a normalized form of
 the term is not found.
 
-The provided disease normalization dictionary (`dictionaties/disease_dict.csv`) is based on
+The default disease normalization dictionary (`dictionaties/disease_dict.csv`) is based on
 the [Manbyo Dictionary](https://sociocom.naist.jp/manbyo-dic-en/) and provides normalization to the standard ICD code
 for the diseases.
 
 The default drug dictionary (`dictionaties/drug_dict.csv`) is based on
 the [Hyakuyaku Dictionary](https://sociocom.naist.jp/hyakuyaku-dic-en/).
+
+**NOTE:**Those files are not provided in this github to prevent issues with git LFS. Please download them from either the links 
+above or the HuggingFace repository.
 
 The dictionary is a CSV file with three columns: the first column is the surface form term and the third column contain
 its standard form. The second column is not used.
