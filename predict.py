@@ -150,7 +150,7 @@ def run(model, input, output=None, normalize=False, **kwargs):
         id_to_tags = pickle.load(tf)
 
     if (os.path.isdir(input)):
-        files = [f for f in os.listdir(input) if os.path.isfile(os.path.join(input, f))]
+        files = [os.path.join(input, f) for f in os.listdir(input) if os.path.isfile(os.path.join(input, f))]
     else:
         files = [input]
 
