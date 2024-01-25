@@ -53,14 +53,7 @@ def to_xml(data, id_to_tags):
     return text
 
 
-def predict_entities(modelpath, sentences_list, len_num_entity_type):
-    model = ner.BertForTokenClassification_pl.from_pretrained_bin(model_path=modelpath, num_labels=2 * len_num_entity_type + 1)
-    bert_tc = model.bert_tc.to(device)
-
-    tokenizer = ner.NER_tokenizer_BIO.from_pretrained(
-        'cl-tohoku/bert-base-japanese-whole-word-masking',
-        num_entity_type=len_num_entity_type  # Entityの数を変え忘れないように！
-    )
+def predict_entities(model, tokenizer, sentences_list):
 
     # entities_list = [] # 正解の固有表現を追加していく
     entities_predicted_list = []  # 抽出された固有表現を追加していく
@@ -68,7 +61,7 @@ def predict_entities(modelpath, sentences_list, len_num_entity_type):
     text_entities_set = []
     for dataset in sentences_list:
         text_entities = []
-        for sample in tqdm(dataset, desc='Predict'):
+        for sample in tqdm(dataset, desc='Predict', leave=False):
             text = sample
             encoding, spans = tokenizer.encode_plus_untagged(
                 text, return_tensors='pt'
@@ -76,7 +69,7 @@ def predict_entities(modelpath, sentences_list, len_num_entity_type):
             encoding = {k: v.to(device) for k, v in encoding.items()}
 
             with torch.no_grad():
-                output = bert_tc(**encoding)
+                output = model(**encoding)
                 scores = output.logits
                 scores = scores[0].cpu().numpy().tolist()
 
@@ -94,7 +87,7 @@ def predict_entities(modelpath, sentences_list, len_num_entity_type):
 
 def combine_sentences(text_entities_set, id_to_tags, insert: str):
     documents = []
-    for text_entities in tqdm(text_entities_set):
+    for text_entities in text_entities_set:
         document = []
         for t in text_entities:
             document.append(to_xml(t, id_to_tags))
@@ -128,7 +121,7 @@ def normalize_entities(text_entities_set, id_to_tags, disease_dict=None, disease
         drug_dict = DefaultDrugDict()
     drug_normalizer = EntityNormalizer(drug_dict, matching_threshold=drug_matching_threshold)
 
-    for entry in text_entities_set:
+    for entry in tqdm(text_entities_set, desc='Normalization', leave=False):
         for text_entities in entry:
             entities = text_entities['entities_predicted']
             for entity in entities:
@@ -148,36 +141,55 @@ def normalize_entities(text_entities_set, id_to_tags, disease_dict=None, disease
 def run(model, input, output=None, normalize=False, **kwargs):
     with open("id_to_tags.pkl", "rb") as tf:
         id_to_tags = pickle.load(tf)
+    len_num_entity_type = len(id_to_tags)
 
+    # Load the model and tokenizer
+    classification_model = ner.BertForTokenClassification_pl.from_pretrained_bin(model_path=model, num_labels=2 * len_num_entity_type + 1)
+    bert_tc = classification_model.bert_tc.to(device)
+
+    tokenizer = ner.NER_tokenizer_BIO.from_pretrained(
+        'cl-tohoku/bert-base-japanese-whole-word-masking',
+        num_entity_type=len_num_entity_type  # Entityの数を変え忘れないように！
+    )
+
+    # Load input files
     if (os.path.isdir(input)):
         files = [os.path.join(input, f) for f in os.listdir(input) if os.path.isfile(os.path.join(input, f))]
     else:
         files = [input]
 
     for file in tqdm(files, desc="Input file"):
-        with open(file) as f:
-            articles_raw = f.read()
+        try:
+            with open(file) as f:
+                articles_raw = f.read()
 
-        article_norm = unicodedata.normalize('NFKC', articles_raw)
+            article_norm = unicodedata.normalize('NFKC', articles_raw)
 
-        sentences_raw = utils.split_sentences(articles_raw)
-        sentences_norm = utils.split_sentences(article_norm)
+            sentences_raw = utils.split_sentences(articles_raw)
+            sentences_norm = utils.split_sentences(article_norm)
 
-        text_entities_set = predict_entities(model, [sentences_norm], len(id_to_tags))
+            text_entities_set = predict_entities(bert_tc, tokenizer, [sentences_norm])
 
-        for i, texts_ent in enumerate(text_entities_set[0]):
-            texts_ent['text'] = sentences_raw[i]
+            for i, texts_ent in enumerate(text_entities_set[0]):
+                texts_ent['text'] = sentences_raw[i]
 
-        if normalize:
-            normalize_entities(text_entities_set, id_to_tags, **kwargs)
+            if normalize:
+                normalize_entities(text_entities_set, id_to_tags, **kwargs)
 
-        documents = combine_sentences(text_entities_set, id_to_tags, '\n')
+            documents = combine_sentences(text_entities_set, id_to_tags, '\n')
 
-        print(documents[0])
+            tqdm.write(f"File: {file}")
+            tqdm.write(documents[0])
+            tqdm.write("")
 
-        if output:
-            with open(file.replace(input, output), 'w') as f:
-                f.write(documents[0])
+            if output:
+                with open(file.replace(input, output), 'w') as f:
+                    f.write(documents[0])
+
+        except Exception as e:
+            tqdm.write("Error while processing file: {}".format(file))
+            tqdm.write(str(e))
+            tqdm.write("")
 
 
 if __name__ == '__main__':
