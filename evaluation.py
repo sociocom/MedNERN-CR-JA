@@ -97,7 +97,7 @@ def evaluate(model_path, test_dataset_path):
     # )
     bert_tc = model.bert_tc.to(device)
     tokenizer = ner.NER_tokenizer_BIO.from_pretrained(
-        'cl-tohoku/bert-base-japanese-whole-word-masking',
+        'tohoku-nlp/bert-base-japanese-whole-word-masking',
         num_entity_type=len(id_to_tags)
     )
 

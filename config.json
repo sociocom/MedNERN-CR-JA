@@ -1,5 +1,5 @@
 {
-  "_name_or_path": "cl-tohoku/bert-base-japanese-whole-word-masking",
+  "_name_or_path": "tohoku-nlp/bert-base-japanese-whole-word-masking",
   "architectures": [
     "BertForTokenClassification"
   ],

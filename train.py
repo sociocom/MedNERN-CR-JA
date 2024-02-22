@@ -57,7 +57,7 @@ def training(model_name: str, output_folder: str, dataset_path: str, max_epochs:
     pickle.dump(id_to_tags, open('id_to_tags.pkl', 'wb'))
 
     tokenizer = ner.NER_tokenizer_BIO.from_pretrained(
-        'cl-tohoku/bert-base-japanese-whole-word-masking',
+        'tohoku-nlp/bert-base-japanese-whole-word-masking',
         num_entity_type=len(id_to_tags)
     )
 
@@ -96,7 +96,7 @@ def training(model_name: str, output_folder: str, dataset_path: str, max_epochs:
 
     if args.from_scratch:
         print("Disregarding the pre-trained sociocom/MedNERN-CR-JA weights and using the base model directly")
-        model = ner.BertForTokenClassification_pl(num_labels=num_labels, lr=lr, model='cl-tohoku/bert-base-japanese-whole-word-masking')
+        model = ner.BertForTokenClassification_pl(num_labels=num_labels, lr=lr, model='tohoku-nlp/bert-base-japanese-whole-word-masking')
     else:
         model = ner.BertForTokenClassification_pl(num_labels=num_labels, lr=lr)
 

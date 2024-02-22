@@ -148,7 +148,7 @@ def run(model, input, output=None, normalize=False, **kwargs):
     bert_tc = classification_model.bert_tc.to(device)
 
     tokenizer = ner.NER_tokenizer_BIO.from_pretrained(
-        'cl-tohoku/bert-base-japanese-whole-word-masking',
+        'tohoku-nlp/bert-base-japanese-whole-word-masking',
         num_entity_type=len_num_entity_type  # Entityの数を変え忘れないように！
     )
 
