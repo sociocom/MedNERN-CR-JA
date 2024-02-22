@@ -113,7 +113,7 @@ def training(model_name: str, output_folder: str, dataset_path: str, max_epochs:
 # %%
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train the model')
-    parser.add_argument('-m', '--model_path', type=str, default='pytorch_model', help='The name to be given to the model file')
+    parser.add_argument('-m', '--model_name', type=str, default='pytorch_model', help='The name to be given to the model file')
     parser.add_argument('-d', '--training_dataset', type=str, default='training_data/MedTxt-CR-JA-training.json', help='Path to the training dataset in JSON format')
     parser.add_argument('-o', '--output', type=str, default='models', help='Path to output the trained model')
     parser.add_argument('--epochs', type=int, default=50, help='Number of epochs to train the model')
